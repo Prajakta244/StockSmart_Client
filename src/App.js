@@ -3,6 +3,7 @@ import Dashboard from 'scenes/dashboard';
 import Products from 'scenes/products';
 import Layout from 'scenes/layout';
 import ProfilePage from 'scenes/profilePage';
+import Transitions from 'scenes/transactions';
 import Navbar from 'scenes/navbar';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -24,6 +25,7 @@ function App() {
           <Route path='/dashboard' element={<Dashboard/>}/>
           <Route path='/products' element={<Products/>}/>
           <Route path='/profile/:userId' element={<ProfilePage/>}/>
+          <Route path='/transactions' element={<Transitions/>}/>
         </Route>
       </Routes>
       </ThemeProvider>

@@ -90,7 +90,7 @@ const Products = () => {
   const handleClose = () => setIsOpen(false);
   const [selectedProduct,setSelectedProduct] = useState(null)
   const isNonMobile = useMediaQuery("(min-width:1000px)");
-  console.log("data", error);
+  console.log("data", data);
 
   return (
     <Box m="1.5rem 2.5rem">

@@ -1,11 +1,14 @@
-import * as React from "react";
+import  React , {useState} from "react";
 import { Unstable_NumberInput as BaseNumberInput } from "@mui/base/Unstable_NumberInput";
 import { styled } from "@mui/system";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import FlexBetween from "./FlexBetween";
 import Grid from "@mui/material/Grid2";
-import { Typography, useTheme,Button } from "@mui/material";
+import { Typography, useTheme, Button } from "@mui/material";
+import { usePostSaleMutation } from "state/api";
+import Slide from '@mui/material/Slide';
+import Snackbar from '@mui/material/Snackbar';
 
 const NumberInput = React.forwardRef(function CustomNumberInput(props, ref) {
   return (
@@ -32,11 +35,57 @@ const NumberInput = React.forwardRef(function CustomNumberInput(props, ref) {
 });
 
 export default function QuantityInput({ productData }) {
+  console.log('productData', productData)
+  const [postSale] = usePostSaleMutation();
   const theme = useTheme();
+  const [isSnackBarOpen, setSnackBarOpen] = useState({
+    open: false,
+    Transition: Slide,
+    vertical: 'top', horizontal: 'right' 
+  });
+  function SlideTransition(props) {
+    return <Slide {...props} direction="up" />;
+  }
+  const { vertical, horizontal, open } = isSnackBarOpen;
+  const [message, setMessage] = useState('');
   const [quantity, setQuantity] = React.useState(1); // State to hold the quantity
+  const addSale = async () => {
+    const saleData = {
+      product_name: productData?.name || "",
+      quantity_sold:quantity || 0,
+      sale_price: quantity*productData?.cost_price ||0,
+      measure_unit: productData?.measure_unit ||"",
+      measure:productData?.measure ||0,
+      product_id:productData?.id||'',
+      date: "2024-10-17"
+    };
+    console.log('sale data', saleData)
 
+    postSale(saleData)
+      .unwrap()
+      .then(() => {
+        console.log('enqueueSnackbar')
+        setMessage('Sale added successfuly!!')
+        setSnackBarOpen({
+          ...isSnackBarOpen,
+          open: true,
+          Transition: SlideTransition,
+        })
+        // refetch();
+      })
+      .catch((e) => alert(e));
+  };
   return (
-    <FlexBetween sx={{m:4}}>
+    <>
+    <Snackbar
+          open={isSnackBarOpen.open}
+          anchorOrigin={{ vertical, horizontal }}
+          TransitionComponent={isSnackBarOpen.Transition}
+          message={message}
+          key={vertical + horizontal}
+          autoHideDuration={1200}
+        />
+    <FlexBetween sx={{ m: 4 }}>
       <Grid container spacing={2} >
         <Grid
           size={12}
@@ -75,7 +124,7 @@ export default function QuantityInput({ productData }) {
           }}
         >
           <Typography variant="h5" component="div">
-            {productData.product}
+            {productData.name}
           </Typography>
         </Grid>
         <Grid
@@ -98,9 +147,9 @@ export default function QuantityInput({ productData }) {
             alignItems: "center",
           }}
         >
-          <NumberInput aria-label="Quantity Input" min={1} max={productData.quantity} 
-            onChange={(event, newValue) =>setQuantity(newValue)} 
-            />
+          <NumberInput aria-label="Quantity Input" min={1} max={productData.quantity}
+            onChange={(event, newValue) => setQuantity(newValue)}
+          />
         </Grid>
         <Grid
           size={4}
@@ -123,7 +172,7 @@ export default function QuantityInput({ productData }) {
           }}
         >
           <Typography variant="h5" component="div">
-            {quantity*productData.price}
+            {quantity * productData.cost_price}
           </Typography>
         </Grid>
         <Grid size={12}
@@ -132,12 +181,12 @@ export default function QuantityInput({ productData }) {
             justifyContent: "center",
             alignItems: "center",
           }}>
-            <Button variant="outlined" color="secondary" onClick={()=>{alert('sale')}}>
-              Sale
-            </Button>
+          <Button variant="outlined" color="secondary" onClick={() => addSale()}>
+            Sale
+          </Button>
         </Grid>
       </Grid>
-    </FlexBetween>
+    </FlexBetween></>
   );
 }
 
@@ -186,9 +235,8 @@ const StyledInput = styled("input")(
   color: ${theme.palette.mode === "dark" ? grey[300] : grey[900]};
   background: ${theme.palette.mode === "dark" ? grey[900] : "#fff"};
   border: 1px solid ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
-  box-shadow: 0px 2px 4px ${
-    theme.palette.mode === "dark" ? "rgba(0,0,0, 0.5)" : "rgba(0,0,0, 0.05)"
-  };
+  box-shadow: 0px 2px 4px ${theme.palette.mode === "dark" ? "rgba(0,0,0, 0.5)" : "rgba(0,0,0, 0.05)"
+    };
   border-radius: 8px;
   margin: 0 8px;
   padding: 10px 12px;
@@ -203,8 +251,7 @@ const StyledInput = styled("input")(
 
   &:focus {
     border-color: ${blue[400]};
-    box-shadow: 0 0 0 3px ${
-      theme.palette.mode === "dark" ? blue[700] : blue[200]
+    box-shadow: 0 0 0 3px ${theme.palette.mode === "dark" ? blue[700] : blue[200]
     };
   }
 

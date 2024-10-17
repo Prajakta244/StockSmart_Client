@@ -35,6 +35,7 @@ const UseForm = ({closeForm,action,selectedProduct}) => {
     measure:selectedProduct?.measure ||0,
     id:selectedProduct?.id||''
   });
+  console.log(formData.measure_unit)
   // if(action == 'update'){
   //   setFormData(selectedProduct)
   // }
@@ -80,7 +81,7 @@ const UseForm = ({closeForm,action,selectedProduct}) => {
           })
           refetch();
         })
-        .catch((e) => alert("there was an error"+e));
+        .catch((e) => alert(e));
       }
     console.log("formData " + formData);
     // closeForm()

@@ -27,9 +27,20 @@ export const api = createApi({
                 body
             })
         }),
+        getTransactions:builder.query({
+            query:()=>`get_sales`,
+            providesTags:["Transactions"]
+        }),
+        postSale:builder.mutation({
+            query:(body)=>({
+                url:`addsale`,
+                method: 'POST',
+                body
+            })
+        }),
     })
 })
 
 export const {
-    useGetUserQuery, useGetProductQuery,usePostProductMutation,useUpdateProductMutation
+    useGetUserQuery, useGetProductQuery,usePostProductMutation,useUpdateProductMutation,useGetTransactionsQuery,usePostSaleMutation
 } = api
