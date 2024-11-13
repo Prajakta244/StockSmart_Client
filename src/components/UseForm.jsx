@@ -1,7 +1,7 @@
 import React from 'react'
 import Grid from '@mui/material/Grid2';
 import { FormControl,Box } from '@mui/material';
-import {TextField,Button,FormLabel,NativeSelect,Select,MenuItem,InputLabel} from '@mui/material';
+import {TextField,Button,FormLabel,NativeSelect,Select,MenuItem,InputLabel,useTheme,Typography} from '@mui/material';
 import { useState,useEffect } from 'react';
 import FlexBetween from './FlexBetween';
 import { usePostProductMutation } from 'state/api';
@@ -12,7 +12,8 @@ import { SnackbarProvider, useSnackbar } from 'notistack';
 import Slide from '@mui/material/Slide';
 import Snackbar from '@mui/material/Snackbar';
 
-const UseForm = ({closeForm,action,selectedProduct}) => {
+const UseForm = ({closeForm,action,productData,title}) => {
+  const theme = useTheme();
   const dispatch = useDispatch()
   const { enqueueSnackbar } = useSnackbar();
   function SlideTransition(props) {
@@ -26,34 +27,27 @@ const UseForm = ({closeForm,action,selectedProduct}) => {
   const { vertical, horizontal, open } = isSnackBarOpen;
   const { data, isLoading,error,refetch } = useGetProductQuery();
   const [formData, setFormData] = useState({
-    name: selectedProduct?.name || "",
-    quantity:selectedProduct?.quantity || 0,
-    unit_price: selectedProduct?.unit_price ||0,
-    cost_price: selectedProduct?.cost_price ||0,
-    supplier_name: selectedProduct?.supplier_name ||"",
-    measure_unit: selectedProduct?.measure_unit ||"",
-    measure:selectedProduct?.measure ||0,
-    id:selectedProduct?.id||''
+    name: productData?.name || "",
+    quantity:productData?.quantity || 0,
+    unit_price: productData?.unit_price ||0,
+    cost_price: productData?.cost_price ||0,
+    supplier_name: productData?.supplier_name ||"",
+    measure_unit: productData?.measure_unit ||"",
+    measure:productData?.measure ||0,
+    id:productData?.id||''
   });
   console.log(formData.measure_unit)
-  // if(action == 'update'){
-  //   setFormData(selectedProduct)
-  // }
-  // console.log(selectedProduct.id)
   const [postProduct] = usePostProductMutation();
   const[updateProduct] = useUpdateProductMutation()
   const unitList = process.env.REACT_APP_UNIT?.split(',')
-  console.log("unitList", unitList);
-  // useEffect(() => {
-  // }, [formData]);
-  // console.l  og("form data after", formData);
+  console.log("action", action);
   const [message, setMessage] = useState('');
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const productData = formData;
-    console.log('prodct data',productData)
     if(action == 'update'){
+      console.log('prodct data',productData)
       const res = await updateProduct({id:productData.id,body:productData})
       
       if(res?.data?.status == 'success'){
@@ -86,6 +80,7 @@ const UseForm = ({closeForm,action,selectedProduct}) => {
     console.log("formData " + formData);
     // closeForm()
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>
@@ -98,7 +93,23 @@ const UseForm = ({closeForm,action,selectedProduct}) => {
           autoHideDuration={1200}
         />
       <FlexBetween sx={{ m: 5 }}>
-        <Grid container spacing={2}>
+      <Grid container spacing={2}>
+      <Grid
+            size={12}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography
+              sx={{ fontSize: 30 }}
+              color={theme.palette.secondary[400]}
+              gutterBottom
+            >
+              {title}
+            </Typography>
+          </Grid>
           <Grid
             size={6}
             sx={{

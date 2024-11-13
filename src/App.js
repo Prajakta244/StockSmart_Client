@@ -4,6 +4,7 @@ import Products from 'scenes/products';
 import Layout from 'scenes/layout';
 import ProfilePage from 'scenes/profilePage';
 import Transitions from 'scenes/transactions';
+import Expenses from 'scenes/expenses';
 import Navbar from 'scenes/navbar';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -26,6 +27,7 @@ function App() {
           <Route path='/products' element={<Products/>}/>
           <Route path='/profile/:userId' element={<ProfilePage/>}/>
           <Route path='/transactions' element={<Transitions/>}/>
+          <Route path='/expenses' element={<Expenses/>}/>
         </Route>
       </Routes>
       </ThemeProvider>

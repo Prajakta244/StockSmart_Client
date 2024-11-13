@@ -8,10 +8,10 @@ import DialogTitle from "@mui/material/DialogTitle";
 import React from "react";
 import UseForm from "./UseForm";
 
-const ModalC = ({ isOpen, handleClose, title,action,productData }) => {
+const ModalC = ({ isOpen, handleClose,modalElement }) => {
   return (
     <Dialog open={isOpen} onClose={handleClose}>
-      <UseForm closeForm={handleClose} action={action} selectedProduct={productData}/>
+      {modalElement}
     </Dialog>
   );
 };

@@ -1,4 +1,4 @@
-import  React , {useState} from "react";
+import React, { useState } from "react";
 import { Unstable_NumberInput as BaseNumberInput } from "@mui/base/Unstable_NumberInput";
 import { styled } from "@mui/system";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -6,7 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import FlexBetween from "./FlexBetween";
 import Grid from "@mui/material/Grid2";
 import { Typography, useTheme, Button } from "@mui/material";
-import { usePostSaleMutation } from "state/api";
+import { usePostSaleMutation,useUpdateSaleMutation } from "state/api";
 import Slide from '@mui/material/Slide';
 import Snackbar from '@mui/material/Snackbar';
 
@@ -34,14 +34,15 @@ const NumberInput = React.forwardRef(function CustomNumberInput(props, ref) {
   );
 });
 
-export default function QuantityInput({ productData }) {
+export default function QuantityInput({ productData, action }) {
   console.log('productData', productData)
   const [postSale] = usePostSaleMutation();
+  const[updateSale] = useUpdateSaleMutation()
   const theme = useTheme();
   const [isSnackBarOpen, setSnackBarOpen] = useState({
     open: false,
     Transition: Slide,
-    vertical: 'top', horizontal: 'right' 
+    vertical: 'top', horizontal: 'right'
   });
   function SlideTransition(props) {
     return <Slide {...props} direction="up" />;
@@ -49,144 +50,156 @@ export default function QuantityInput({ productData }) {
   const { vertical, horizontal, open } = isSnackBarOpen;
   const [message, setMessage] = useState('');
   const [quantity, setQuantity] = React.useState(1); // State to hold the quantity
+  const defaultQuantity = productData?.defaultQuantity || 1
+  console.log(productData.cost_price,productData?.quantity)
   const addSale = async () => {
     const saleData = {
       product_name: productData?.name || "",
-      quantity_sold:quantity || 0,
-      sale_price: quantity*productData?.cost_price ||0,
-      measure_unit: productData?.measure_unit ||"",
-      measure:productData?.measure ||0,
-      product_id:productData?.id||'',
+      quantity_sold: quantity || 0,
+      sale_price: quantity * productData?.cost_price/productData?.quantity_sold || 0,
+      measure_unit: productData?.measure_unit || "",
+      measure: productData?.measure || 0,
+      product_id: productData?.product_id || '',
       date: "2024-10-17"
     };
     console.log('sale data', saleData)
-
-    postSale(saleData)
-      .unwrap()
-      .then(() => {
-        console.log('enqueueSnackbar')
-        setMessage('Sale added successfuly!!')
-        setSnackBarOpen({
-          ...isSnackBarOpen,
-          open: true,
-          Transition: SlideTransition,
-        })
-        // refetch();
+    console.log(productData?.cost_price,productData?.quantity_sold)
+    if (action == 'update') {
+      const res = await updateSale({id:productData.id,body:saleData})
+      console.log(res)
+      setMessage('Sale updated successfuly!!')
+      setSnackBarOpen({
+        ...isSnackBarOpen,
+        open: true,
+        Transition: SlideTransition,
       })
-      .catch((e) => alert(e));
+    } else {
+      postSale(saleData)
+        .unwrap()
+        .then(() => {
+          setMessage('Sale added successfuly!!')
+          setSnackBarOpen({
+            ...isSnackBarOpen,
+            open: true,
+            Transition: SlideTransition,
+          })
+          // refetch();
+        })
+        .catch((e) => alert(e));
+    }
   };
   return (
     <>
-    <Snackbar
-          open={isSnackBarOpen.open}
-          anchorOrigin={{ vertical, horizontal }}
-          TransitionComponent={isSnackBarOpen.Transition}
-          message={message}
-          key={vertical + horizontal}
-          autoHideDuration={1200}
-        />
-    <FlexBetween sx={{ m: 4 }}>
-      <Grid container spacing={2} >
-        <Grid
-          size={12}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            sx={{ fontSize: 30 }}
-            color={theme.palette.secondary[400]}
-            gutterBottom
+      <Snackbar
+        open={isSnackBarOpen.open}
+        anchorOrigin={{ vertical, horizontal }}
+        TransitionComponent={isSnackBarOpen.Transition}
+        message={message}
+        key={vertical + horizontal}
+        autoHideDuration={1200}
+      />
+      <FlexBetween sx={{ m: 4 }}>
+        <Grid container spacing={2} >
+          <Grid
+            size={12}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            Sale Product
-          </Typography>
+            <Typography
+              sx={{ fontSize: 30 }}
+              color={theme.palette.secondary[400]}
+              gutterBottom
+            >
+              Sale Product
+            </Typography>
+          </Grid>
+          <Grid
+            size={4}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5" component="div">
+              Product:
+            </Typography>
+          </Grid>
+          <Grid
+            size={8}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5" component="div">
+              {productData.name}
+            </Typography>
+          </Grid>
+          <Grid
+            size={4}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5" component="div">
+              Quantity:
+            </Typography>
+          </Grid>
+          <Grid
+            size={8}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <NumberInput aria-label="Quantity Input" min={1} max={productData.quantity}
+              onChange={(event, newValue) => setQuantity(newValue)} defaultValue={defaultQuantity}
+            />
+          </Grid>
+          <Grid
+            size={4}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5" component="div">
+              Price:
+            </Typography>
+          </Grid>
+          <Grid
+            size={8}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5" component="div">
+              {quantity * (productData.cost_price/productData?.quantity_sold)}
+            </Typography>
+          </Grid>
+          <Grid size={12}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}>
+            <Button variant="outlined" color="secondary" onClick={() => addSale()}>
+              Sale
+            </Button>
+          </Grid>
         </Grid>
-        <Grid
-          size={4}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h5" component="div">
-            Product:
-          </Typography>
-        </Grid>
-        <Grid
-          size={8}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h5" component="div">
-            {productData.name}
-          </Typography>
-        </Grid>
-        <Grid
-          size={4}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h5" component="div">
-            Quantity:
-          </Typography>
-        </Grid>
-        <Grid
-          size={8}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <NumberInput aria-label="Quantity Input" min={1} max={productData.quantity}
-            onChange={(event, newValue) => setQuantity(newValue)}
-          />
-        </Grid>
-        <Grid
-          size={4}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h5" component="div">
-            Price:
-          </Typography>
-        </Grid>
-        <Grid
-          size={8}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h5" component="div">
-            {quantity * productData.cost_price}
-          </Typography>
-        </Grid>
-        <Grid size={12}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}>
-          <Button variant="outlined" color="secondary" onClick={() => addSale()}>
-            Sale
-          </Button>
-        </Grid>
-      </Grid>
-    </FlexBetween></>
+      </FlexBetween></>
   );
 }
 

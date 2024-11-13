@@ -5,16 +5,13 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ModalC from "./Modal";
 import SaleModal from "./SaleModal";
-const LongMenu = ({productData}) => {
+import QuantityInput from "./QuantityInput";
+import UseForm from "./UseForm";
+const LongMenu = ({options,modalElements}) => {
   const ITEM_HEIGHT = 48;
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [saleModalOpen, setSaleModalOpen] = useState(false);
-  const options = [
-    { value: "Edit", action: setModalOpen },
-    {value:"sale",action:setSaleModalOpen}
-  ];
+  
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -50,26 +47,13 @@ const LongMenu = ({productData}) => {
           },
         }}
       >
-        {options.map((option) => (
+        {options && options.map((option) => (
           <MenuItem key={option.value} onClick={option.action}>
             {option.value}
           </MenuItem>
         ))}
       </Menu>
-      <ModalC
-        isOpen={modalOpen}
-        handleClose={() => setModalOpen(false)}
-        productData={productData}
-        title="Update Product"
-        action="update"
-      ></ModalC>
-      <SaleModal
-        isOpen={saleModalOpen}
-        handleClose={() => setSaleModalOpen(false)}
-        title="Sale Product"
-        action='sale'
-        productData={productData}
-      ></SaleModal>
+      {modalElements && modalElements.map((ele) => (ele))}
     </div>
   );
 };

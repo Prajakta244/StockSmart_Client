@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react'
-import { SettingsOutlined,ChevronLeft,ChevronRightOutlined,HomeOutlined,ShoppingCartOutlined,Groups2Outlined,ReceiptLongOutlined,PublicOutlined,PointOfSaleOutlined,TodayOutlined,CalendarMonthOutlined,AdminPanelSettingsOutlined,TrendingUpOutlined,PieChartOutline} from '@mui/icons-material'
+import { SettingsOutlined,ChevronLeft,ChevronRightOutlined,HomeOutlined,ShoppingCartOutlined,Groups2Outlined,ReceiptLongOutlined,PublicOutlined,PointOfSaleOutlined,TodayOutlined,CalendarMonthOutlined,AdminPanelSettingsOutlined,TrendingUpOutlined,PieChartOutline,AccountBalanceOutlined} from '@mui/icons-material'
 import FlexBetween from './FlexBetween'
 import { useLocation,useNavigate } from 'react-router-dom'
 
@@ -30,12 +30,12 @@ const Sidebar = ({isNonMobile,drawerWidth,isSideBarOpen,setIsSideBarOpen}) => {
             icon:<ReceiptLongOutlined/>
         },
         {
-            text:"Sales",
-            icon:null
+            text:"Expenses",
+            icon:<AccountBalanceOutlined/>
         },
         {
-            text:"Overview",
-            icon:<PointOfSaleOutlined/>
+            text:"Sales",
+            icon:null
         },
         {
             text:"Daily",
@@ -76,6 +76,20 @@ const Sidebar = ({isNonMobile,drawerWidth,isSideBarOpen,setIsSideBarOpen}) => {
                 boxSizing:"border-box",
                 borderWidth:isNonMobile?0:'2px',
                 width:drawerWidth
+            },
+            overflow:"auto",
+            scrollbarWidth: 'thin',
+            '&::-webkit-scrollbar': {
+                width: '0.4em',
+            },
+            '&::-webkit-scrollbar-track': {
+                background: "#f1f1f1",
+            },
+            '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#888',
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+                background: '#555'
             }
         }}>
             <Box width="100%">
