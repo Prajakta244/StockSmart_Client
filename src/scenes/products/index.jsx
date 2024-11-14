@@ -104,7 +104,27 @@ const Product = ({
       sx={{
         backgroundImage: "none",
         backgroundColor: theme.palette.background.alt,
-        borderRadius: "0.55rem",
+        boxShadow: 24,
+            borderRadius: 2,
+            position: 'relative',
+            transition: 'transform 0.5s ease, border-bottom 0.3s ease',
+            '&:hover': {
+              transform: 'scale(1.05)', // Zoom effect 
+            }, 
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: 0,
+              height: '5px',
+              backgroundColor: theme.palette.secondary[400], // Border color
+              transition: 'width 0.7s ease', // Animate the border width
+            },
+            '&:hover::after': {
+              width: '100%', // Expands the border to full width on hover
+            },
+
       }}
     >
       <Snackbar
