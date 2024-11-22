@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useGetTransactionsQuery, useDeleteSaleMutation } from 'state/api'
+import { useGetTransactionsQuery, useDeleteSaleMutation,useGetProductQuery } from 'state/api'
 import LongMenu from 'components/LongMenu'
 import ModalC from 'components/Modal'
 import QuantityInput from 'components/QuantityInput'
@@ -9,6 +9,7 @@ import Table from 'components/Table'
 
 const Transitions = () => {
   const { data, isLoading, refetch } = useGetTransactionsQuery()
+  const {refetch:fetchProdData } = useGetProductQuery()
   const [deleteSale] = useDeleteSaleMutation()
   const [isOpen, setIsOpen] = useState(false);
   const [snackBarOpen, setSnackBar] = useState(false)
@@ -28,6 +29,7 @@ const Transitions = () => {
       if (res?.data?.status == 'success') {
         msg = 'Sale deleted successfuly!!'
         refetch()
+        fetchProdData()
       }else{
         msg = 'Something went wrong!!! Try again later.'
       }
@@ -51,11 +53,11 @@ const Transitions = () => {
     <ModalC
       isOpen={saleModalOpen}
       handleClose={() => setSaleModalOpen(false)}
-      title="Sale Product"
+      title="Update Transaction"
       action='sale'
       modalElement={<QuantityInput productData={{
         name: selectedRow?.product_name, quantity: selectedRow?.quantity_sold, measure: selectedRow?.measure, measure_unit: selectedRow?.measure_unit, unit: '1', unit_price: selectedRow?.sale_price/selectedRow?.quantity_sold, cost_price: selectedRow?.sale_price, supplier_name: '', id: selectedRow?.id,product_id:selectedRow?.product_id, defaultQuantity: selectedRow?.quantity_sold ,quantity_sold:selectedRow?.quantity_sold,available_quantity:selectedRow?.available_quantity
-      }} action='update'/>}
+      }} action='update' title="Update Transaction"/>}
     ></ModalC>,
     <ModalC
       isOpen={deleteModalOpen}

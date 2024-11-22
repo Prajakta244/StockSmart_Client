@@ -34,7 +34,7 @@ const NumberInput = React.forwardRef(function CustomNumberInput(props, ref) {
   );
 });
 
-export default function QuantityInput({ productData, action }) {
+export default function QuantityInput({ productData, action,title }) {
   console.log('productData', productData)
   const [postSale] = usePostSaleMutation();
   const[updateSale] = useUpdateSaleMutation()
@@ -69,6 +69,7 @@ export default function QuantityInput({ productData, action }) {
       const res = await updateSale({id:productData.id,body:saleData})
       console.log(res)
       fetchTrans()
+      fetchProdData()
       setMessage('Sale updated successfuly!!')
       setSnackBarOpen({
         ...isSnackBarOpen,
@@ -115,7 +116,7 @@ export default function QuantityInput({ productData, action }) {
               color={theme.palette.secondary[400]}
               gutterBottom
             >
-              Sale Product
+              {title}
             </Typography>
           </Grid>
           <Grid

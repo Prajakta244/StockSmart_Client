@@ -99,7 +99,7 @@ const Product = ({
     }}
     modalElement={<QuantityInput productData={{
       name, quantity, measure, measure_unit, unit, unit_price, cost_price, supplier_name, action, setOpen, product_id: id, available_quantity: quantity,quantity_sold:1
-    }} />}
+    }} title="Sale Product"/>}
   ></ModalC>,
   <ModalC
     isOpen={deleteModalOpen}
