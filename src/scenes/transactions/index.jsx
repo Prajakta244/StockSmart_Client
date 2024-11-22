@@ -22,13 +22,21 @@ const Transitions = () => {
     vertical: 'top', horizontal: 'right'
   });
   const onDeleteSale = async () => {
-    console.log('inside delete',selectedRow)
-    const res = await deleteSale({ id: selectedRow['id'] })
-
-    if (res?.data?.status == 'success') {
-      setMessage('Sale deleted successfuly!!')
-      refetch()
+    try{
+      const res = await deleteSale({ id: selectedRow['id'] })
+      let msg = ''
+      if (res?.data?.status == 'success') {
+        msg = 'Sale deleted successfuly!!'
+        refetch()
+      }else{
+        msg = 'Something went wrong!!! Try again later.'
+      }
+      setMessage(msg)
+      setDeleteModalOpen(false)
       setSnackBar(true)
+    }catch(e){
+      setDeleteModalOpen(false)
+      console.error(`Error occured while deleting transaction ${e}`)
     }
   }
   const options = [
@@ -46,7 +54,7 @@ const Transitions = () => {
       title="Sale Product"
       action='sale'
       modalElement={<QuantityInput productData={{
-        name: selectedRow?.product_name, quantity: selectedRow?.quantity_sold, measure: selectedRow?.measure, measure_unit: selectedRow?.measure_unit, unit: '1', unit_price: 200, cost_price: selectedRow?.sale_price, supplier_name: '', id: selectedRow?.id,product_id:selectedRow?.product_id, defaultQuantity: 100 ,quantity_sold:selectedRow?.quantity_sold
+        name: selectedRow?.product_name, quantity: selectedRow?.quantity_sold, measure: selectedRow?.measure, measure_unit: selectedRow?.measure_unit, unit: '1', unit_price: selectedRow?.sale_price/selectedRow?.quantity_sold, cost_price: selectedRow?.sale_price, supplier_name: '', id: selectedRow?.id,product_id:selectedRow?.product_id, defaultQuantity: selectedRow?.quantity_sold ,quantity_sold:selectedRow?.quantity_sold,available_quantity:selectedRow?.available_quantity
       }} action='update'/>}
     ></ModalC>,
     <ModalC
@@ -87,7 +95,14 @@ const Transitions = () => {
     },
     {
       field: 'quantity_sold',
-      headerName: 'Quantity',
+      headerName: 'Quantity Sold',
+      flex: 1,
+      align: 'center',
+      headerAlign: 'center'
+    },
+    {
+      field: 'available_quantity',
+      headerName: 'Available Quantity',
       flex: 1,
       align: 'center',
       headerAlign: 'center'

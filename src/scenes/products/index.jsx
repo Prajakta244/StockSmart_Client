@@ -56,13 +56,21 @@ const Product = ({
   ];
   
   const ondeleteproduct = async () => {
-    console.log('inside delete', id)
-    const res = await deleteproduct({ id: id })
-
-    if (res?.data?.status == 'success') {
-      setMessage('Product deleted successfuly!!')
-      refetch()
+    try{
+      const res = await deleteproduct({ id: id })
+      let msg = ''
+      if (res?.data?.status == 'success') {
+        msg = 'Product deleted successfuly!!'
+        refetch()
+      }else{
+        msg = 'Something went wrong!!! Try again later.'
+      }
+      setMessage(msg)
+      setDeleteModalOpen(false)
       setSnackBar(true)
+    }catch(e){
+      setDeleteModalOpen(false)
+      console.error(`Error occured while deleting product ${e}`)
     }
   }
   const actionsObj = {
@@ -90,7 +98,7 @@ const Product = ({
       name, quantity, measure, measure_unit, unit, unit_price, cost_price, supplier_name, action, setOpen, id
     }}
     modalElement={<QuantityInput productData={{
-      name, quantity, measure, measure_unit, unit, unit_price, cost_price, supplier_name, action, setOpen, product_id: id, defaultQuantity: 1,quantity_sold:1
+      name, quantity, measure, measure_unit, unit, unit_price, cost_price, supplier_name, action, setOpen, product_id: id, available_quantity: quantity,quantity_sold:1
     }} />}
   ></ModalC>,
   <ModalC
@@ -133,7 +141,7 @@ const Product = ({
         // TransitionComponent={Slide}
         message={message}
         key={'top' + 'right'}
-        autoHideDuration={5000}
+        autoHideDuration={3000}
         onClose={handleClose}
       />
       <CardContent>

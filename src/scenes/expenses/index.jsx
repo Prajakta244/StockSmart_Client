@@ -28,14 +28,21 @@ const Expenses = () => {
     vertical: 'top', horizontal: 'right'
   });
   const onDeleteExpense = async () => {
-    console.log('inside delete', selectedRow)
-    const res = await deleteExpense({ id: selectedRow['id'] })
-
-    if (res?.data?.status == 'success') {
-    setMessage('Expense deleted successfuly!!')
-    refetch()
-    setSnackBar(true)
-    setDeleteModalOpen(false)
+    try{
+      const res = await deleteExpense({ id: selectedRow['id'] })
+      let msg = ''
+      if (res?.data?.status == 'success') {
+        msg = 'Expense deleted successfuly!!'
+        refetch()
+      }else{
+        msg = 'Something went wrong!!! Try again later.'
+      }
+      setMessage(msg)
+      setDeleteModalOpen(false)
+      setSnackBar(true)
+    }catch(e){
+      setDeleteModalOpen(false)
+      console.error(`Error occured while deleting product ${e}`)
     }
   }
   const options = [
@@ -53,9 +60,6 @@ const Expenses = () => {
       modalElement={<DialogeBox title='Delete Expense' content='Are you sure you want to delete the expense?' actions={actionsObj} />}
     ></ModalC>
   ]
-  useEffect(() => {
-    refetch()
-  }, [])
   console.log(data)
   const columns = [
     {

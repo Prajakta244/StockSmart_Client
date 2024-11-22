@@ -6,7 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import FlexBetween from "./FlexBetween";
 import Grid from "@mui/material/Grid2";
 import { Typography, useTheme, Button } from "@mui/material";
-import { usePostSaleMutation,useUpdateSaleMutation } from "state/api";
+import { usePostSaleMutation,useUpdateSaleMutation,useGetTransactionsQuery,useGetProductQuery } from "state/api";
 import Slide from '@mui/material/Slide';
 import Snackbar from '@mui/material/Snackbar';
 
@@ -38,6 +38,8 @@ export default function QuantityInput({ productData, action }) {
   console.log('productData', productData)
   const [postSale] = usePostSaleMutation();
   const[updateSale] = useUpdateSaleMutation()
+  const {refetch:fetchTrans } = useGetTransactionsQuery()
+  const {refetch:fetchProdData } = useGetProductQuery()
   const theme = useTheme();
   const [isSnackBarOpen, setSnackBarOpen] = useState({
     open: false,
@@ -49,24 +51,24 @@ export default function QuantityInput({ productData, action }) {
   }
   const { vertical, horizontal, open } = isSnackBarOpen;
   const [message, setMessage] = useState('');
-  const [quantity, setQuantity] = React.useState(1); // State to hold the quantity
+  const [quantity, setQuantity] = useState(productData?.quantity_sold); // State to hold the quantity
   const defaultQuantity = productData?.defaultQuantity || 1
-  console.log(productData.cost_price,productData?.quantity)
   const addSale = async () => {
     const saleData = {
       product_name: productData?.name || "",
       quantity_sold: quantity || 0,
-      sale_price: quantity * productData?.cost_price/productData?.quantity_sold || 0,
+      sale_price: quantity * productData?.unit_price || 0,
       measure_unit: productData?.measure_unit || "",
       measure: productData?.measure || 0,
       product_id: productData?.product_id || '',
-      date: "2024-10-17"
+      date: "2024-10-17",
+      available_quantity:productData.available_quantity - quantity
     };
     console.log('sale data', saleData)
-    console.log(productData?.cost_price,productData?.quantity_sold)
     if (action == 'update') {
       const res = await updateSale({id:productData.id,body:saleData})
       console.log(res)
+      fetchTrans()
       setMessage('Sale updated successfuly!!')
       setSnackBarOpen({
         ...isSnackBarOpen,
@@ -83,7 +85,7 @@ export default function QuantityInput({ productData, action }) {
             open: true,
             Transition: SlideTransition,
           })
-          // refetch();
+          fetchProdData();
         })
         .catch((e) => alert(e));
     }
@@ -160,8 +162,7 @@ export default function QuantityInput({ productData, action }) {
               alignItems: "center",
             }}
           >
-            <NumberInput aria-label="Quantity Input" min={1} max={productData.quantity}
-              onChange={(event, newValue) => setQuantity(newValue)} defaultValue={defaultQuantity}
+            <NumberInput aria-label="Quantity Input" min={1} max={productData.available_quantity} onChange={(event, newValue) => { setQuantity(newValue)} } defaultValue={defaultQuantity}
             />
           </Grid>
           <Grid
@@ -185,7 +186,7 @@ export default function QuantityInput({ productData, action }) {
             }}
           >
             <Typography variant="h5" component="div">
-              {quantity * (productData.cost_price/productData?.quantity_sold)}
+              {quantity * (productData.unit_price)}
             </Typography>
           </Grid>
           <Grid size={12}
